@@ -6,3 +6,26 @@
 2、如果用*Stream或*Reader对同一个文件操作时，则会出现要么读取不到文件内容，要以内容写不进行到目标文件的问题；
 
 3、在用raf写入内容到文件中时要注意中文乱码的问题，用: raf.write("content".getBytes("UTF-8"));基于不会有问题；
+
+4、在用for(;;) 或 while(true) 等待另一个类的某接口的执行结果时，要注意退出条件的判断，以勉程序一直等待造成卡死，如：
+  //错误示例：
+  for(;;) {
+    if (A.success){
+      break;
+    }
+  }
+  如果只是这样写的话，程序就有可能卡死，因为如果success一直为false,则for循环会一直执行不会退出，所以此时要加上一超时机制，超过一特定时间后就退出
+  以勉程序卡死；
+  //正确示例：
+  int rtyCount = 0;
+  for(;;) {
+    if (A.success){
+      break;
+    } else {
+      Thread.sleep(1000 * 3);
+      rtyCount++;
+      if (rtyCount >= 5) {
+        break;
+      }
+    }
+  }
